@@ -1,0 +1,5 @@
+#Bisseccao
+a = 2
+b = 3
+delta = 0.1
+n = 50
