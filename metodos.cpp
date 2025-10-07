@@ -21,9 +21,12 @@ double derivada(double x) {
     return log10(x) + (1 / log(10));
 }
 
-// ======================= MÉTODOS =======================
+//Ponto Fixo
+double g(double x) {
+    // x = 1 / log10(x) -> rearranjando f(x) = x*log10(x) - 1 = 0
+    return pow(10, 1 / x);
+}
 
-// ----------- Bissecção -----------
 void Bisseccao(Dados dados, ofstream &saida) {
     saida << "==================== METODO DA BISSECCAO ====================\n";
     saida << "Iter\t| a\t| b\t| x\t| f(x)\t| Erro\n";
@@ -49,13 +52,6 @@ void Bisseccao(Dados dados, ofstream &saida) {
     saida << "Raiz aproximada = " << x << "\n\n";
 }
 
-// ----------- Ponto Fixo -----------
-double g(double x) {
-    // x = 1 / log10(x) -> rearranjando f(x) = x*log10(x) - 1 = 0
-    // Exemplo de função g(x) ajustada para convergência local
-    return pow(10, 1 / x);
-}
-
 void PontoFixo(Dados dados, ofstream &saida) {
     saida << "==================== METODO DO PONTO FIXO ====================\n";
     saida << "Iter\t| x\t| g(x)\t| Erro\n";
@@ -75,7 +71,6 @@ void PontoFixo(Dados dados, ofstream &saida) {
     saida << "Raiz aproximada = " << x1 << "\n\n";
 }
 
-// ----------- Newton-Raphson -----------
 void NewtonRaphson(Dados dados, ofstream &saida) {
     saida << "==================== METODO DE NEWTON-RAPHSON ====================\n";
     saida << "Iter\t| x\t| f(x)\t| Erro\n";
@@ -95,7 +90,6 @@ void NewtonRaphson(Dados dados, ofstream &saida) {
     saida << "Raiz aproximada = " << x1 << "\n\n";
 }
 
-// ----------- Secante -----------
 void Secante(Dados dados, ofstream &saida) {
     saida << "==================== METODO DA SECANTE ====================\n";
     saida << "Iter\t| x_{k-1}\t| x_k\t| f(x_k)\t| Erro\n";
@@ -121,7 +115,6 @@ void Secante(Dados dados, ofstream &saida) {
     saida << "Raiz aproximada = " << x2 << "\n\n";
 }
 
-// ----------- Falsa Posição (Regula Falsi) -----------
 void RegulaFalsi(Dados dados, ofstream &saida) {
     saida << "==================== METODO DA FALSA POSICAO ====================\n";
     saida << "Iter\t| a\t| b\t| x\t| f(x)\t| Erro\n";
@@ -149,7 +142,7 @@ void RegulaFalsi(Dados dados, ofstream &saida) {
     saida << "Raiz aproximada = " << x << "\n\n";
 }
 
-// ======================= LEITURA DO ARQUIVO =======================
+//LEITURA DO ARQUIVO
 Dados lerDados(ifstream &arquivo) {
     Dados dados = {0, 0, 0, 0, 0};
     string linha;
@@ -176,7 +169,6 @@ Dados lerDados(ifstream &arquivo) {
     return dados;
 }
 
-// ======================= MAIN =======================
 int main() {
     ifstream entrada("C:\\Users\\DELL\\Documents\\GitHub\\Calculo_Numerico\\dados.txt");
     if (!entrada.is_open()) {
