@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
+#include <algorithm>
 
 using namespace std;
 
@@ -25,7 +26,7 @@ double derivada(double x) {
 // ----------- Bissecção -----------
 void Bisseccao(Dados dados, ofstream &saida) {
     saida << "==================== METODO DA BISSECCAO ====================\n";
-    saida << "Iter\t a\t b\t x\t f(x)\t Erro\n";
+    saida << "Iter\t| a\t| b\t| x\t| f(x)\t| Erro\n";
 
     int k = 0;
     double a = dados.a, b = dados.b, x, erro;
@@ -35,7 +36,7 @@ void Bisseccao(Dados dados, ofstream &saida) {
         double fx = funcao(x);
 
         erro = fabs(b - a);
-        saida << k + 1 << "\t" << a << "\t" << b << "\t" << x << "\t" << fx << "\t" << erro << "\n";
+        saida << k + 1 << "\t| " << a << "\t| " << b << "\t| " << x << "\t| " << fx << "\t| " << erro << "\n";
 
         if (fa * fx < 0)
             b = x;
@@ -57,7 +58,7 @@ double g(double x) {
 
 void PontoFixo(Dados dados, ofstream &saida) {
     saida << "==================== METODO DO PONTO FIXO ====================\n";
-    saida << "Iter\t x\t g(x)\t Erro\n";
+    saida << "Iter\t| x\t| g(x)\t| Erro\n";
 
     double x0 = dados.a;
     double x1, erro;
@@ -66,7 +67,7 @@ void PontoFixo(Dados dados, ofstream &saida) {
     do {
         x1 = g(x0);
         erro = fabs(x1 - x0);
-        saida << k + 1 << "\t" << x0 << "\t" << x1 << "\t" << erro << "\n";
+        saida << k + 1 << "\t| " << x0 << "\t| " << x1 << "\t| " << erro << "\n";
         x0 = x1;
         k++;
     } while (erro > dados.delta && k < dados.n);
@@ -77,7 +78,7 @@ void PontoFixo(Dados dados, ofstream &saida) {
 // ----------- Newton-Raphson -----------
 void NewtonRaphson(Dados dados, ofstream &saida) {
     saida << "==================== METODO DE NEWTON-RAPHSON ====================\n";
-    saida << "Iter\t x\t f(x)\t Erro\n";
+    saida << "Iter\t| x\t| f(x)\t| Erro\n";
 
     double x0 = (dados.a + dados.b) / 2.0;
     double x1, erro;
@@ -86,7 +87,7 @@ void NewtonRaphson(Dados dados, ofstream &saida) {
     do {
         x1 = x0 - funcao(x0) / derivada(x0);
         erro = fabs(x1 - x0);
-        saida << k + 1 << "\t" << x0 << "\t" << funcao(x0) << "\t" << erro << "\n";
+        saida << k + 1 << "\t| " << x0 << "\t| " << funcao(x0) << "\t| " << erro << "\n";
         x0 = x1;
         k++;
     } while (erro > dados.delta && k < dados.n);
@@ -97,7 +98,7 @@ void NewtonRaphson(Dados dados, ofstream &saida) {
 // ----------- Secante -----------
 void Secante(Dados dados, ofstream &saida) {
     saida << "==================== METODO DA SECANTE ====================\n";
-    saida << "Iter\t x_{k-1}\t x_k\t f(x_k)\t Erro\n";
+    saida << "Iter\t| x_{k-1}\t| x_k\t| f(x_k)\t| Erro\n";
 
     double x0 = dados.a;
     double x1 = dados.b;
@@ -110,7 +111,7 @@ void Secante(Dados dados, ofstream &saida) {
         x2 = x1 - f1 * (x1 - x0) / (f1 - f0);
         erro = fabs(x2 - x1);
 
-        saida << k + 1 << "\t" << x0 << "\t" << x1 << "\t" << f1 << "\t" << erro << "\n";
+        saida << k + 1 << "\t| " << x0 << "\t| " << x1 << "\t| " << f1 << "\t| " << erro << "\n";
 
         x0 = x1;
         x1 = x2;
@@ -123,7 +124,7 @@ void Secante(Dados dados, ofstream &saida) {
 // ----------- Falsa Posição (Regula Falsi) -----------
 void RegulaFalsi(Dados dados, ofstream &saida) {
     saida << "==================== METODO DA FALSA POSICAO ====================\n";
-    saida << "Iter\t a\t b\t x\t f(x)\t Erro\n";
+    saida << "Iter\t| a\t| b\t| x\t| f(x)\t| Erro\n";
 
     double a = dados.a, b = dados.b, x, erro;
     int k = 0;
@@ -135,7 +136,7 @@ void RegulaFalsi(Dados dados, ofstream &saida) {
         double fx = funcao(x);
 
         erro = fabs(fx);
-        saida << k + 1 << "\t" << a << "\t" << b << "\t" << x << "\t" << fx << "\t" << erro << "\n";
+        saida << k + 1 << "\t| " << a << "\t| " << b << "\t| " << x << "\t| " << fx << "\t| " << erro << "\n";
 
         if (fa * fx < 0)
             b = x;
@@ -150,41 +151,47 @@ void RegulaFalsi(Dados dados, ofstream &saida) {
 
 // ======================= LEITURA DO ARQUIVO =======================
 Dados lerDados(ifstream &arquivo) {
-    Dados dados;
+    Dados dados = {0, 0, 0, 0, 0};
     string linha;
+
     while (getline(arquivo, linha)) {
+        // ignora comentários e linhas vazias
         if (linha.empty() || linha[0] == '#') continue;
+        // remove espaços em branco
+        linha.erase(remove(linha.begin(), linha.end(), ' '), linha.end());
 
-        if (linha.find("a =") != string::npos)
-            dados.a = stod(linha.substr(linha.find('=') + 1));
+        // pega chave e valor
+        size_t pos = linha.find('=');
+        if (pos == string::npos) continue;
 
-        else if (linha.find("b =") != string::npos)
-            dados.b = stod(linha.substr(linha.find('=') + 1));
+        string chave = linha.substr(0, pos);
+        string valor = linha.substr(pos + 1);
 
-        else if (linha.find("delta =") != string::npos)
-            dados.delta = stod(linha.substr(linha.find('=') + 1));
-
-        else if (linha.find("n =") != string::npos)
-            dados.n = stoi(linha.substr(linha.find('=') + 1));
+        // converte conforme a chave
+        if (chave == "a") dados.a = stod(valor);
+        else if (chave == "b") dados.b = stod(valor);
+        else if (chave == "delta") dados.delta = stod(valor);
+        else if (chave == "n") dados.n = stoi(valor);
     }
     return dados;
 }
 
 // ======================= MAIN =======================
 int main() {
-    ifstream entrada("dados.txt");
+    ifstream entrada("C:\\Users\\DELL\\Documents\\GitHub\\Calculo_Numerico\\dados.txt");
     if (!entrada.is_open()) {
         cerr << "Erro: nao foi possivel abrir o arquivo de entrada.\n";
         return 1;
     }
 
-    ofstream saida("resultados.txt");
+    ofstream saida("C:\\Users\\DELL\\Documents\\GitHub\\Calculo_Numerico\\resultados.txt");
     if (!saida.is_open()) {
         cerr << "Erro: nao foi possivel criar o arquivo de saida.\n";
         return 1;
     }
 
     Dados dados = lerDados(entrada);
+    cout << "A= " << dados.a << " B= " << dados.b << " Delta= " << dados.delta << " N= " << dados.n << "\n";
 
     Bisseccao(dados, saida);
     PontoFixo(dados, saida);

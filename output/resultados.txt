@@ -1,0 +1,24 @@
+==================== METODO DA BISSECCAO ====================
+Iter	 a	 b	 x	 f(x)	 Erro
+Raiz aproximada = 1.01858e-312
+
+==================== METODO DO PONTO FIXO ====================
+Iter	 x	 g(x)	 Erro
+1	0.1	1e+010	1e+010
+Raiz aproximada = 1e+010
+
+==================== METODO DE NEWTON-RAPHSON ====================
+Iter	 x	 f(x)	 Erro
+1	1.55	-0.704986	1.12865
+Raiz aproximada = 2.67865
+
+==================== METODO DA SECANTE ====================
+Iter	 x_{k-1}	 x_k	 f(x_k)	 Erro
+1	0.1	3	0.431364	0.816889
+Raiz aproximada = 2.18311
+
+==================== METODO DA FALSA POSICAO ====================
+Iter	 a	 b	 x	 f(x)	 Erro
+1	0.1	3	2.18311	-0.25976	0.25976
+Raiz aproximada = 2.18311
+
